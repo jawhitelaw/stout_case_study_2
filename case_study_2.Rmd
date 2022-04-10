@@ -10,3 +10,151 @@ output:
     df_print: paged
     code_download: TRUE
 ---
+
+```{r}
+# load packages
+library(tidyverse)
+library(ggthemes)
+theme_set(theme_minimal())
+```
+
+```{r}
+# read in data
+orders <- read_csv("casestudy.csv")
+```
+
+```{r}
+# create output data and add year to output
+year <- orders %>%
+  select(year) %>%
+  unique()
+output <- tibble(year)
+output$year <- as.integer(output$year)
+```
+
+```{r}
+# compute total revenue
+total_revenue <- orders %>%
+  group_by(year) %>%
+  mutate(total_revenue = sum(net_revenue)) %>%
+  select(total_revenue, year) %>%
+  unique()
+```
+
+```{r}
+# add total revenue to output
+output <- output %>%
+  left_join(total_revenue, by = "year")
+```
+
+```{r}
+# add boolean column new_customer to orders
+orders <- orders %>%
+  group_by(customer_email) %>%
+  mutate(new_customer = case_when(year == min(year) ~ TRUE, year > min(year) ~ FALSE))
+```
+
+```{r}
+# compute new customer revenue
+new_customer_revenue <- orders %>%
+  filter(new_customer == TRUE) %>%
+  group_by(year) %>%
+  mutate(new_customer_revenue = sum(net_revenue)) %>%
+  select(new_customer_revenue, year) %>%
+  unique()
+```
+
+```{r}
+# add new customer revenue to output
+output <- output %>%
+  left_join(new_customer_revenue, by = "year")
+```
+
+```{r}
+# compute existing customer growth and add to output
+output <- output %>%
+  arrange(year) %>%
+  mutate(existing_customer_growth = (total_revenue - new_customer_revenue) - (lag(total_revenue) - lag(new_customer_revenue)))
+```
+
+```{r}
+# compute revenue lost from attrition and add to output
+output <- output %>%
+  arrange(year) %>%
+  mutate(revenue_lost_attrition = lag(total_revenue) - (total_revenue - new_customer_revenue))
+```
+
+```{r}
+# compute existing customer revenue and add to output
+output <- output %>%
+  mutate(existing_customer_revenue = total_revenue - new_customer_revenue)
+```
+
+```{r}
+# compute existing customer revenue prior year and add to ouput
+output <- output %>%
+  arrange(year) %>%
+  mutate(existing_customer_revenue_prior = lag(total_revenue) - lag(new_customer_revenue))
+```
+
+```{r}
+# compute total customers and total customers prior
+total_customers <- orders %>%
+  group_by(year) %>%
+  mutate(total_customers = n()) %>%
+  select(total_customers, year) %>%
+  unique() %>%
+  ungroup() %>%
+  arrange(year) %>%
+  mutate(total_customers_prior = lag(total_customers))
+```
+
+```{r}
+# add total customers and total customers prior to output
+output <- output %>%
+  left_join(total_customers, by = "year")
+```
+
+```{r}
+# compute new customers
+new_customers <- orders %>%
+  filter(new_customer == TRUE) %>%
+  group_by(year) %>%
+  mutate(new_customers = n()) %>%
+  select(new_customers, year) %>%
+  unique()
+```
+
+```{r}
+# add new customers to output
+output <- output %>%
+  left_join(new_customers, by = "year")
+```
+
+```{r}
+# compute lost customers and add to output
+output <- output %>%
+  arrange(year) %>%
+  mutate(lost_customers = lag(total_customers) - (total_customers - new_customers))
+```
+
+```{r}
+# final table of information
+output
+```
+
+```{r}
+# graphs
+
+```
+
+
+
+
+
+
+
+
+
+
+
