@@ -5,9 +5,13 @@ date: "4/10/2022"
 output: 
   html_document:
     keep_md: TRUE
+    toc: TRUE
+    toc_float: TRUE
     df_print: paged
     code_download: TRUE
 ---
+
+## Setup
 
 
 
@@ -24,6 +28,8 @@ theme_set(theme_minimal())
 # read in data
 orders <- read_csv("casestudy.csv")
 ```
+
+## Data Cleaning and Manipulation
 
 
 ```r
@@ -155,6 +161,8 @@ output <- output %>%
   mutate(lost_customers = lag(total_customers) - (total_customers - new_customers))
 ```
 
+## Final Output
+
 
 ```r
 # final table of information
@@ -167,9 +175,10 @@ output
   </script>
 </div>
 
+## Visualizations and Observations
+
 
 ```r
-# graphs
 output %>%
   ggplot() +
   geom_line(aes(x = year, y = new_customer_revenue/new_customers, color = "New")) +
