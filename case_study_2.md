@@ -189,7 +189,7 @@ output %>%
 
 ![](case_study_2_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
-Existing customers tend to generate more revenue on average over sample.
+Existing customers tend to generate more revenue on average over the sample period.
 
 
 ```r

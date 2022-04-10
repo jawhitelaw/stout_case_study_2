@@ -165,7 +165,7 @@ output %>%
   scale_color_manual("", breaks = c("Existing", "New"), values = c("Existing" = "red", "New" = "blue"))
 ```
 
-Existing customers tend to generate more revenue on average over sample.
+Existing customers tend to generate more revenue on average over the sample period.
 
 ```{r}
 output %>%
